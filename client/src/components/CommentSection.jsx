@@ -1,7 +1,6 @@
 import { useState } from "react";
-
-export default function CommentSection({ initialComments = [] }) {
-  const [comments, setComments] = useState(initialComments);
+export default function CommentSection() {
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
@@ -93,7 +92,9 @@ export default function CommentSection({ initialComments = [] }) {
 
                   <button
                     onClick={() =>
-                      setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                      setReplyingTo(
+                        replyingTo === comment.id ? null : comment.id
+                      )
                     }
                     className="text-xs text-orange-600 mt-2 hover:underline font-medium"
                   >
@@ -169,7 +170,10 @@ export default function CommentSection({ initialComments = [] }) {
       </div>
 
       {/* Add Comment */}
-      <form onSubmit={handleAddComment} className="border-t border-orange-100 pt-5">
+      <form
+        onSubmit={handleAddComment}
+        className="border-t border-orange-100 pt-5"
+      >
         <h3 className="text-sm font-medium text-gray-800 mb-2">
           Leave a comment
         </h3>
