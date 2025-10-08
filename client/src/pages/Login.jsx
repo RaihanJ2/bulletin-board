@@ -23,8 +23,8 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      if (error.res) {
-        setError(error.res.data.message);
+      if (error.response) {
+        setError(error.response.data.message);
       } else {
         setError("An error occurred. Please try again.");
       }

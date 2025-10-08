@@ -7,12 +7,19 @@ import session from "express-session";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import authRoutes from "./routes/auth.js";
+import MongoStore from "connect-mongo";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 dotenv.config();
 const port = process.env.PORT;
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 /*~~~~ MIDDLEWARE ~~~~*/
 
@@ -22,7 +29,13 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 hours
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+    }),
+    cookie: { maxAge: 24 * 60 * 60 * 1000 },
+    secure: false,
+    sameSite: "lax",
   })
 );
 
