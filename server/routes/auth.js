@@ -6,8 +6,8 @@ import {
   register,
   googleAuth,
   googleAuthCallback,
-} from "../controllers/authController";
-import { isAuthenticated } from "../middleware/auth";
+} from "../controllers/authController.js";
+import { isAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -17,3 +17,5 @@ router.get("/auth/google", googleAuth);
 router.get("/auth/callback", googleAuthCallback);
 router.post("/logout", logout);
 router.get("/profile", isAuthenticated, getProfile);
+
+export default router;

@@ -1,20 +1,22 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import passport from "../config/passport.js";
-import { isAuthenticated } from "../middleware/auth.js";
 import User from "../models/user.js";
 
 export const register = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const existingUser = await User.findOne({ username });
+    const { email, password } = req.body;
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
+      return res.status(400).json({ message: "email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({
+      email,
+      password: hashedPassword,
+      provider: "local",
+    });
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -49,7 +51,7 @@ export const logout = async (req, res) => {
 export const getProfile = async (req, res) => {
   res.json({
     message: "This is a protected route",
-    user: req.user.username,
+    user: req.user.email,
   });
 };
 
