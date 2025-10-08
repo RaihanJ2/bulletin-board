@@ -147,7 +147,7 @@ export default function Login() {
               className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-gray-300 rounded-lg
                          text-sm font-medium text-gray-700 bg-white hover:bg-gray-50
                          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500
-                         transition-colors"
+                         transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path

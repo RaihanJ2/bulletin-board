@@ -3,6 +3,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as Auth0Strategy } from "passport-auth0";
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 passport.use(
   new LocalStrategy(
@@ -14,7 +17,7 @@ passport.use(
         if (!user) {
           return done(null, false, { message: "Incorrect email." });
         }
-        const isValid = await bcrypt.compare(password, user.password);
+        const isValid = bcrypt.compare(password, user.password);
 
         if (!isValid) {
           return done(null, false, { message: "Incorrect password." });
@@ -30,10 +33,10 @@ passport.use(
 passport.use(
   new Auth0Strategy(
     {
-      domain: [process.env.AUTH0_DOMAIN],
-      clientID: [process.env.AUTH0_CLIENT_ID],
-      clientSecret: [process.env.AUTH0_CLIENT_SECRET],
-      callbackURL: [process.env.AUTH0_CALLBACK_URL],
+      domain: process.env.AUTH0_DOMAIN,
+      clientID: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      callbackURL: process.env.AUTH0_CALLBACK_URL,
     },
     async (accessToken, refreshToken, extraParams, profile, done) => {
       try {

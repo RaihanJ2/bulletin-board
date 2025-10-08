@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hook/useAuth";
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { isAuthenticated, logoutUser } = useAuth();
+  const Navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -16,6 +19,24 @@ export default function ProfileDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await logoutUser();
+      Navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+  if (!isAuthenticated) {
+    return (
+      <Link
+        to="/login"
+        className="px-4 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+      >
+        Sign In
+      </Link>
+    );
+  }
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Tombol Profile */}
@@ -101,7 +122,10 @@ export default function ProfileDropdown() {
 
           {/* Menu: Sign Out */}
           <div className="border-t border-orange-100 mt-2 pt-2">
-            <button className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-orange-50">
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-orange-50"
+            >
               <svg
                 className="mr-3 h-5 w-5"
                 fill="none"

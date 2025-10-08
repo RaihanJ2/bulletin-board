@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
+import { useAuth } from "../hook/useAuth";
 
 export default function Navbar() {
   const [search, setSearch] = useState("");
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-orange-100 shadow-sm">
@@ -41,13 +43,18 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link
-              to="/register"
-              className="px-4 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-            >
-              Get started
-            </Link>
-            <ProfileDropdown />
+            {isAuthenticated ? (
+              <>
+                <ProfileDropdown />
+              </>
+            ) : (
+              <Link
+                to="/register"
+                className="px-4 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+              >
+                Get started
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import passport from "passport";
 import session from "express-session";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/authRoutes.js";
 import MongoStore from "connect-mongo";
 
 const app = express();
