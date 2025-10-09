@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt";
 import passport from "../config/passport.js";
 import User from "../models/user.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 export const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { fullname, email, password } = req.body;
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -63,7 +65,7 @@ export const googleAuth = passport.authenticate("auth0", {
 
 export const googleAuthCallback = [
   passport.authenticate("auth0", {
-    failureRedirect: "/login",
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
   }),
   (req, res) => {
     res.json({
@@ -72,5 +74,6 @@ export const googleAuthCallback = [
         email: req.user.email,
       },
     });
+    res.redirect(process.env.CLIENT_URL);
   },
 ];
