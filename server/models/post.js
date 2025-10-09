@@ -34,7 +34,7 @@ const postSchema = new Schema(
     ],
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
+      enum: ["draft", "published"],
       default: "draft",
     },
     likes: {

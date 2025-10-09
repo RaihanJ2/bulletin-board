@@ -1,107 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
-  const allArticles = [
-    {
-      id: 1,
-      title: "Getting Started with React",
-      description:
-        "Learn the basics of React and start building your first interactive UI easily.",
-      author: "John Doe",
-      date: "March 15, 2024",
-      category: "Programming",
-    },
-    {
-      id: 2,
-      title: "Design Principles for Beginners",
-      description:
-        "Understand the core design principles to make your interfaces beautiful and functional.",
-      author: "Sarah Lee",
-      date: "April 2, 2024",
-      category: "Design",
-    },
-    {
-      id: 3,
-      title: "How to Build a Startup in 2024",
-      description:
-        "Explore key strategies for launching your startup successfully in a digital world.",
-      author: "Michael Tan",
-      date: "May 10, 2024",
-      category: "Business",
-    },
-    {
-      id: 4,
-      title: "AI Trends That Will Shape the Future",
-      description:
-        "A look into the most promising artificial intelligence trends driving innovation today.",
-      author: "Alice Kim",
-      date: "June 5, 2024",
-      category: "Technology",
-    },
-    {
-      id: 5,
-      title: "Deep Dive into Node.js",
-      description:
-        "Explore backend development with Node.js and understand how it powers modern web apps.",
-      author: "Kevin Park",
-      date: "June 20, 2024",
-      category: "Programming",
-    },
-    {
-      id: 6,
-      title: "Modern UI Patterns",
-      description:
-        "Discover the most effective design trends and patterns shaping modern interfaces.",
-      author: "Clara Sun",
-      date: "July 2, 2024",
-      category: "Design",
-    },
-    {
-      id: 7,
-      title: "Digital Marketing Strategies",
-      description:
-        "Learn how to grow your brand and business with proven digital marketing methods.",
-      author: "Tim Wong",
-      date: "July 15, 2024",
-      category: "Business",
-    },
-  ];
-
-  // --- State Management ---
+  const [posts, setposts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // --- Filtering Logic ---
-  const filteredArticles =
+  // --- Fetch data artikel dari backend ---
+  useEffect(() => {
+    const fetchposts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/post`);
+        setposts(res.data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    fetchposts();
+  }, []);
+
+  // --- Filter kategori ---
+  const filteredPosts =
     selectedCategory === "All"
-      ? allArticles
-      : allArticles.filter(
-          (article) => article.category === selectedCategory
+      ? posts
+      : posts.filter(
+          (post) =>
+            post.category &&
+            post.category.toLowerCase() === selectedCategory.toLowerCase()
         );
 
-  // --- Pagination Logic ---
-  const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+  // --- Pagination ---
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentArticles = filteredArticles.slice(
+  const currentPosts = filteredPosts.slice(
     startIndex,
     startIndex + itemsPerPage
   );
 
-  // --- Category Options ---
+  // --- Daftar kategori ---
   const categories = ["All", "Programming", "Design", "Business", "Technology"];
 
-  // --- Pagination Controls ---
+  // --- Fungsi Pagination ---
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
-
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
-
-  // --- Reset halaman ke 1 saat filter berubah ---
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setCurrentPage(1);
@@ -112,10 +61,12 @@ export default function Home() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl rounded font-bold mb-4">Share Your Knowledge</h1>
-          <p className="text-xl mb-8">Discover and create amazing articles</p>
+          <h1 className="text-4xl rounded font-bold mb-4">
+            Share Your Knowledge
+          </h1>
+          <p className="text-xl mb-8">Discover and create amazing Posts</p>
           <Link
-            to="/create-article"
+            to="/create-post"
             className="bg-white text-orange-600 px-6 py-3 rounded-full font-semibold hover:bg-orange-50 transition-colors"
           >
             Start Writing
@@ -125,9 +76,9 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Articles Section */}
+        {/* posts Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Articles</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts</h2>
 
           {/* Filter Categories */}
           <div className="flex flex-wrap gap-3 mb-8">
@@ -146,40 +97,44 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Article List */}
+          {/* post List */}
           <div className="space-y-6">
-            {currentArticles.map((article) => (
+            {currentPosts.map((post) => (
               <Link
-                to={`/article/${article.id}`}
-                key={article.id}
+                to={`/post/${post.slug}`}
+                key={post.slug}
                 className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
               >
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {article.title}
+                  {post.title}
                 </h3>
                 <div className="text-sm text-gray-500 mb-3">
                   By{" "}
                   <span className="text-gray-700 font-medium">
-                    {article.author}
+                    {post.author?.name || "Unknown Author"}
                   </span>{" "}
-                  • <span>{article.date}</span>
+                  • <span>{post.date || "No date"}</span>
                 </div>
                 <div className="text-orange-500 text-sm font-medium mb-3">
-                  {article.category}
+                  {post.category || "Uncategorized"}
                 </div>
-                <p className="text-gray-600">{article.description}</p>
+                <p className="text-gray-600">
+                  {post.content
+                    ? post.content.substring(0, 100) + "..."
+                    : "No description available."}
+                </p>
               </Link>
             ))}
 
-            {filteredArticles.length === 0 && (
+            {filteredPosts.length === 0 && (
               <p className="text-center text-gray-500 py-8">
-                No articles found for this category.
+                No posts found for this category.
               </p>
             )}
           </div>
 
           {/* Pagination */}
-          {filteredArticles.length > 0 && (
+          {filteredPosts.length > 0 && (
             <div className="flex justify-center items-center space-x-3 mt-10">
               <button
                 onClick={handlePrev}
@@ -215,13 +170,13 @@ export default function Home() {
             </div>
             <div className="flex space-x-4">
               <Link
-                to="/create-article"
+                to="/create-post"
                 className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition-colors"
               >
-                New Article
+                New post
               </Link>
               <Link
-                to="/Settings"
+                to="/settings"
                 className="border border-orange-500 text-orange-500 px-6 py-3 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
               >
                 History Post

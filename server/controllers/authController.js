@@ -54,8 +54,27 @@ export const logout = async (req, res) => {
 export const getProfile = async (req, res) => {
   res.json({
     message: "This is a protected route",
-    user: req.user.email,
+    user: {
+      _id: req.user._id,
+      name: req.user.fullname,
+      email: req.user.email,
+      bio: req.user.bio || "",
+    },
   });
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, bio } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { fullname: name, bio },
+      { new: true }
+    );
+    res.json({ message: "Profile updated", user });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating profile" });
+  }
 };
 
 export const googleAuth = passport.authenticate("auth0", {
@@ -68,12 +87,6 @@ export const googleAuthCallback = [
     failureRedirect: `${process.env.CLIENT_URL}/login`,
   }),
   (req, res) => {
-    res.json({
-      message: "Auth0 login successful",
-      user: {
-        email: req.user.email,
-      },
-    });
     res.redirect(process.env.CLIENT_URL);
   },
 ];

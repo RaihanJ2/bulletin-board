@@ -1,17 +1,38 @@
+import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullname: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setError("");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    try {
+      const res = await axios.post(`${API_URL}/register`, formData);
+      console.log("register response:", res.data);
+      navigate("/login");
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error.response) {
+        setError(error.response.data.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    }
   };
 
   return (
@@ -33,6 +54,11 @@ export default function Register() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-100">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
             {/* Full Name */}
             <div>
               <label
@@ -49,9 +75,9 @@ export default function Register() {
                 className="mt-1 block w-full rounded-lg border border-orange-300 bg-gray-50 text-gray-900
                            focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500
                            px-3 py-2 h-10 transition-colors"
-                value={formData.fullName}
+                value={formData.fullname}
                 onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
+                  setFormData({ ...formData, fullname: e.target.value })
                 }
               />
             </div>

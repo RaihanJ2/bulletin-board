@@ -46,6 +46,7 @@ passport.use(
           // Create new user
           user = new User({
             auth0Id: profile.id,
+            fullname: profile.displayName,
             email: profile.emails?.[0]?.value,
             provider: "auth0",
           });
