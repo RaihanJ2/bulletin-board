@@ -26,7 +26,7 @@ export default function History() {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get(`${API_URL}/post`, {
+      const res = await axios.get(`${API_URL}/post/my-posts`, {
         withCredentials: true,
       });
 

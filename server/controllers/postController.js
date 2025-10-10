@@ -12,6 +12,20 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
+export const getPostsByCurrentUser = async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.user._id })
+      .populate("author", "fullname email")
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (err) {
+    console.error("❌ [getPostsByCurrentUser] Error:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to get user posts", error: err.message });
+  }
+};
+
 export const getPostBySlug = async (req, res) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug })
