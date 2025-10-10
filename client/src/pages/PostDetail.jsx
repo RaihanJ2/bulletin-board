@@ -41,7 +41,7 @@ export default function PostDetail() {
   // ✅ Jika data berhasil diambil
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="bg-white rounded-xl shadow-md border border-orange-100 p-8 mb-10">
+      <div className="bg-white border-orange-200 rounded-xl shadow-md border border-orange-100 p-8 mb-10">
         <Link to="/" className="text-orange-500 hover:text-orange-600 text-sm">
           ← Back to Posts
         </Link>
@@ -57,7 +57,7 @@ export default function PostDetail() {
             className="w-12 h-12 rounded-full mr-4 border-2 border-orange-200"
           />
           <div>
-            <p className="text-green-800 font-semibold">
+            <p className="text-orange-500 text-xl capitalize font-semibold">
               {post.author?.fullname || ""}
             </p>
             <p className="text-gray-800 font-semibold">{post.author?.email}</p>

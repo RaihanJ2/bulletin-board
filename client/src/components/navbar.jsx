@@ -1,10 +1,10 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../hook/useAuth";
 
 export default function Navbar() {
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function Navbar() {
           </Link>
 
           <div className="flex-1 max-w-xl mx-8">
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="text"
                 placeholder="Search articles..."
@@ -54,7 +54,7 @@ export default function Navbar() {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex items-center space-x-4">

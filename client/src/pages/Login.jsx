@@ -37,20 +37,20 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center mb-6">
-          <span className="text-3xl font-bold text-orange-500">MyArticle</span>
+      <div className="flex flex-col items-center justify-center sm:mx-auto sm:w-full sm:max-w-md">
+        <Link to="/" className="flex items-center">
+          <span className="text-5xl rubik font-bold hover:scale-105 scale-95 duration-300 text-white p-2 rounded bg-orange-500">
+            Postly™
+          </span>
         </Link>
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">
-          Welcome back!
-        </h2>
+
         <p className="mt-2 text-center text-sm text-gray-600">
           Please sign in to your account
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-100">
+        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-200">
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Email Input */}
             {error && (

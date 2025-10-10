@@ -9,7 +9,7 @@ export default function Home() {
   const [posts, setposts] = useState([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
   // --- Fetch data artikel dari backend ---
   useEffect(() => {
@@ -166,7 +166,7 @@ export default function Home() {
               <button
                 onClick={handlePrev}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition"
+                className="px-4 py-2 bg-gray-200 cursor-pointer rounded-lg disabled:opacity-50 hover:bg-gray-300 transition"
               >
                 Prev
               </button>
@@ -176,7 +176,7 @@ export default function Home() {
               <button
                 onClick={handleNext}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-300 transition"
+                className="px-4 py-2 bg-gray-200 cursor-pointer rounded-lg disabled:opacity-50 hover:bg-gray-300 transition"
               >
                 Next
               </button>
