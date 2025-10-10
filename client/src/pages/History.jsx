@@ -1,32 +1,51 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import PublishedArticles from "../components/PublishedArticles";
 import Drafts from "../components/Drafts";
 import Comments from "../components/Comments";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function History() {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "React Router Simplified",
-      date: "Mar 15, 2024",
-      views: 234,
-      status: "published",
-    },
-    {
-      id: 2,
-      title: "Introduction to Node.js",
-      date: "Mar 10, 2024",
-      views: 156,
-      status: "published",
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [drafts, setDrafts] = useState([]);
   const [comments, setComments] = useState([]);
   const [activeTab, setActiveTab] = useState("Post");
   const [editingItem, setEditingItem] = useState(null);
   const [editedContent, setEditedContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await axios.get(`${API_URL}/post`, {
+        withCredentials: true,
+      });
+
+      // Separate published posts and drafts
+      const allPosts = res.data;
+      const publishedPosts = allPosts.filter(
+        (post) => post.status === "published"
+      );
+      const draftPosts = allPosts.filter((post) => post.status === "draft");
+
+      setPosts(publishedPosts);
+      setDrafts(draftPosts);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      setError("Failed to load posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (editingItem?.type === "comment")
@@ -34,16 +53,31 @@ export default function History() {
   }, [editingItem]);
 
   const handleEditClick = (item, type) => {
-    if (type === "Post" || type === "draft") navigate(`/edit-post/${item.id}`);
+    if (type === "Post" || type === "draft")
+      navigate(`/edit-article/${item._id}`);
     else if (type === "comment")
       setEditingItem({ id: item.id, type, data: item });
   };
 
-  const handleDeleteClick = (id, type) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus item ini?")) return;
-    if (type === "Post") setPosts(posts.filter((p) => p.id !== id));
-    if (type === "draft") setDrafts(drafts.filter((d) => d.id !== id));
-    if (type === "comment") setComments(comments.filter((c) => c.id !== id));
+  const handleDeleteClick = async (id, type) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      if (type === "Post" || type === "draft") {
+        await axios.delete(`${API_URL}/post/${id}`, {
+          withCredentials: true,
+        });
+        setPosts(posts.filter((p) => p._id !== id));
+        setDrafts(drafts.filter((d) => d._id !== id));
+      }
+      if (type === "comment") {
+        // Add comment delete API call here when available
+        setComments(comments.filter((c) => c.id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting item:", err);
+      alert("Failed to delete item");
+    }
   };
 
   const handleSave = () => {
@@ -55,6 +89,14 @@ export default function History() {
     );
     setEditingItem(null);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -92,6 +134,13 @@ export default function History() {
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
           <h1 className="text-2xl font-bold text-white">History</h1>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 bg-red-50 border-b border-red-100">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="border-b border-orange-100 flex">
