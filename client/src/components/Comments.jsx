@@ -1,71 +1,112 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Comments() {
-  // ✅ Dummy data komentar
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      PostTitle: "Understanding React Context API",
-      comment: "This article really helped me understand state sharing!",
-      date: "2025-10-04",
-    },
-    {
-      id: 2,
-      PostTitle: "Building a REST API with Node.js and Express",
-      comment: "Great explanation on routing and middleware!",
-      date: "2025-09-30",
-    },
-    {
-      id: 3,
-      PostTitle: "Modern CSS Techniques for Responsive Design",
-      comment: "Loved the CSS Grid examples, very practical.",
-      date: "2025-09-25",
-    },
-  ]);
-
-  // ✅ State untuk modal
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
   const [editedComment, setEditedComment] = useState("");
 
-  // ✅ Buka modal edit
+  // Fetch user's comments
+  useEffect(() => {
+    fetchUserComments();
+  }, []);
+
+  const fetchUserComments = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${API_URL}/comment/my-comments`, {
+        withCredentials: true,
+      });
+      setComments(res.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Open edit modal
   const handleEdit = (comment) => {
     setSelectedComment(comment);
-    setEditedComment(comment.comment);
+    setEditedComment(comment.content);
     setIsModalOpen(true);
   };
 
-  // ✅ Simpan hasil edit
-  const handleSave = () => {
-    setComments((prevComments) =>
-      prevComments.map((c) =>
-        c.id === selectedComment.id ? { ...c, comment: editedComment } : c
-      )
-    );
-    setIsModalOpen(false);
-    alert("Comment updated successfully!");
-  };
+  // Save edited comment
+  const handleSave = async () => {
+    try {
+      await axios.put(
+        `${API_URL}/comment/${selectedComment._id}`,
+        { content: editedComment },
+        { withCredentials: true }
+      );
 
-  // ✅ Hapus komentar
-  const handleDelete = (id) => {
-    if (confirm("Are you sure you want to delete this comment?")) {
-      setComments((prevComments) => prevComments.filter((c) => c.id !== id));
+      setComments((prevComments) =>
+        prevComments.map((c) =>
+          c._id === selectedComment._id ? { ...c, content: editedComment } : c
+        )
+      );
+      setIsModalOpen(false);
+      alert("Comment updated successfully!");
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      alert("Failed to update comment");
     }
   };
+
+  // Delete comment
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_URL}/comment/${id}`, {
+        withCredentials: true,
+      });
+      setComments((prevComments) => prevComments.filter((c) => c._id !== id));
+      alert("Comment deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      alert("Failed to delete comment");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  if (comments.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">You haven't made any comments yet.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
         <div
-          key={comment.id}
+          key={comment._id}
           className="p-4 rounded-lg border border-orange-100 hover:bg-orange-50 transition-colors"
         >
           <div className="flex justify-between items-start">
             <div className="flex-grow">
-              <p className="font-medium text-gray-900">{comment.PostTitle}</p>
-              <p className="mt-2 text-gray-600 text-sm">"{comment.comment}"</p>
+              <p className="font-medium text-gray-900">
+                {comment.post?.title || "Post deleted"}
+              </p>
+              <p className="mt-2 text-gray-600 text-sm">"{comment.content}"</p>
               <p className="mt-2 text-xs text-gray-500">
-                Commented on {comment.date}
+                Commented on {new Date(comment.createdAt).toLocaleDateString()}
               </p>
             </div>
 
@@ -77,7 +118,7 @@ export default function Comments() {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(comment.id)}
+                onClick={() => handleDelete(comment._id)}
                 className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
               >
                 Delete
@@ -87,7 +128,7 @@ export default function Comments() {
         </div>
       ))}
 
-      {/* ✅ Modal Edit Komentar */}
+      {/* Edit Comment Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
