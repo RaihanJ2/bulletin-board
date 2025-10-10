@@ -4,7 +4,7 @@ import PublishedArticles from "../components/PublishedArticles";
 import Drafts from "../components/Drafts";
 import Comments from "../components/Comments";
 
-export default function Settings() {
+export default function History() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([
     {
@@ -90,7 +90,7 @@ export default function Settings() {
       {/* Container utama */}
       <div className="bg-white rounded-xl shadow-sm border border-orange-100 overflow-hidden">
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
-          <h1 className="text-2xl font-bold text-white">Settings</h1>
+          <h1 className="text-2xl font-bold text-white">History</h1>
         </div>
 
         {/* Tabs */}

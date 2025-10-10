@@ -101,7 +101,7 @@ export default function ProfileDropdown() {
 
           {/* Menu: Activity History */}
           <Link
-            to="/Settings" // Update this path
+            to="/History" // Update this path
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50"
           >
             <svg

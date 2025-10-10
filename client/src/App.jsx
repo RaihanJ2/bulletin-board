@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
-import Home from "./pages/home";
-import Settings from "./pages/Settings";
+import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import PostDetail from "./pages/PostDetail";
 import Login from "./pages/Login";
@@ -15,6 +14,7 @@ import PublishedArticles from "./components/PublishedArticles";
 import Comments from "./components/Comments";
 import Drafts from "./components/Drafts";
 import ResetPassword from "./pages/ResetPassword";
+import History from "./pages/History";
 
 function App() {
   return (
@@ -31,11 +31,11 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/create-post" element={<CreatePost />} />
             <Route
-              path="/settings"
+              path="/history"
               element={
                 <ProtectedRoute>
                   {" "}
-                  <Settings />
+                  <History />
                 </ProtectedRoute>
               }
             />
