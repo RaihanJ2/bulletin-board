@@ -3,6 +3,7 @@ import {
   getAllPosts,
   createPost,
   getPostBySlug,
+  getPostById,
   updatePost,
   deletePost,
   getPostsByCurrentUser,
@@ -11,16 +12,15 @@ import { isAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", getAllPosts);
-
 router.get("/my-posts", isAuthenticated, getPostsByCurrentUser);
+router.get("/by-id/:id", isAuthenticated, getPostById);
+
+router.get("/", getAllPosts);
+router.post("/", createPost);
 
 router.get("/:slug", getPostBySlug);
 
-router.post("/", createPost);
-
-router.put("/:id", updatePost);
-
-router.delete("/:id", deletePost);
+router.put("/:id", isAuthenticated, updatePost);
+router.delete("/:id", isAuthenticated, deletePost);
 
 export default router;

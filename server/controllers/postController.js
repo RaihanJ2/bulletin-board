@@ -26,6 +26,42 @@ export const getPostsByCurrentUser = async (req, res) => {
   }
 };
 
+export const getPostById = async (req, res) => {
+  try {
+    console.log("🔍 Fetching post by ID:", req.params.id);
+    console.log("👤 User:", req.user?._id);
+
+    // Validate MongoDB ObjectId format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid post ID format" });
+    }
+
+    const post = await Post.findById(req.params.id).populate(
+      "author",
+      "fullname email"
+    );
+
+    if (!post) {
+      console.log("❌ Post not found");
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Check if the user is the author of the post
+    if (post.author._id.toString() !== req.user._id.toString()) {
+      console.log("❌ Unauthorized access attempt");
+      return res
+        .status(403)
+        .json({ message: "Not authorized to edit this post" });
+    }
+
+    console.log("✅ Post found:", post.title);
+    res.json(post);
+  } catch (err) {
+    console.error("❌ [getPostById] Error:", err);
+    res.status(500).json({ message: "Failed to get post", error: err.message });
+  }
+};
+
 export const getPostBySlug = async (req, res) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug })
@@ -56,10 +92,22 @@ export const createPost = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (req.user && post.author.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this post" });
+    }
+
     const updated = await Post.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (!updated) return res.status(404).json({ message: "Post not found" });
+
     res.json(updated);
   } catch (err) {
     console.error("❌ [updatePost] Error:", err);
@@ -71,8 +119,19 @@ export const updatePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const deleted = await Post.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Post not found" });
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (req.user && post.author.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this post" });
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
     res.json({ message: "Post deleted" });
   } catch (err) {
     console.error("❌ [deletePost] Error:", err);
