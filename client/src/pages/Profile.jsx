@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,8 +25,15 @@ export default function Profile() {
       });
     } catch (error) {
       console.error("Error fetching user data:", error);
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         navigate("/login");
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to fetch user data.",
+          icon: "error",
+          confirmButtonColor: "#f97316",
+        });
       }
     }
   };
@@ -40,17 +48,60 @@ export default function Profile() {
       await axios.put(`${API_URL}/profile`, userData, {
         withCredentials: true,
       });
-      alert("Profile updated successfully!");
+      Swal.fire({
+        title: "Success!",
+        text: "Your profile has been updated successfully.",
+        icon: "success",
+        confirmButtonColor: "#f97316",
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      Swal.fire({
+        title: "Update Failed",
+        text: "Failed to update profile. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+      });
     }
   };
 
-  // ✅ Fungsi baru untuk reset password
-  const handlePasswordReset = () => {
-    alert("Password reset link has been sent to your email.");
-    navigate("/reset-password"); // redirect setelah alert
+  // ✅ Password reset with SweetAlert
+  const handlePasswordReset = async () => {
+    const result = await Swal.fire({
+      title: "Send Password Reset Link?",
+      text: "A password reset link will be sent to your registered email.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#f97316",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, send it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Simulate backend request (you can replace this with real API call)
+        await axios.post(`${API_URL}/forgot-password`, {
+          email: userData.email,
+        });
+
+        Swal.fire({
+          title: "Link Sent!",
+          text: "Password reset link has been sent to your email.",
+          icon: "success",
+          confirmButtonColor: "#f97316",
+        });
+
+        navigate("/reset-password");
+      } catch (error) {
+        console.error("Error sending password reset:", error);
+        Swal.fire({
+          title: "Error",
+          text: "Failed to send reset link. Please try again later.",
+          icon: "error",
+          confirmButtonColor: "#f97316",
+        });
+      }
+    }
   };
 
   return (
@@ -64,22 +115,6 @@ export default function Profile() {
         {/* Content */}
         <div className="p-6 space-y-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Avatar Section */}
-            <div className="flex items-center space-x-6">
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  className="px-4 py-2 text-sm border border-orange-500 text-orange-500 rounded-full hover:bg-orange-50 transition-colors"
-                >
-                  Change Photo
-                </button>
-                <p className="text-sm text-gray-500">
-                  Recommended: Square image, at least 400x400px
-                </p>
-              </div>
-            </div>
-
-            {/* Profile Information */}
             <div className="space-y-5">
               {/* Full Name */}
               <div>
@@ -127,7 +162,7 @@ export default function Profile() {
                 />
               </div>
 
-              {/* ✅ Password Reset Info */}
+              {/* ✅ Password Reset Section */}
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <p className="text-sm text-gray-700">
                   To change your password, click the button below. A password

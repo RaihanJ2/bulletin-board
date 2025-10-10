@@ -73,7 +73,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen roboto bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-tr rounded-2xl from-orange-400 to-orange-500 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -83,7 +83,9 @@ export default function Home() {
           <p className="text-xl mb-8">Discover and create amazing Posts</p>
           <Link
             to="/create-post"
-            className="bg-white text-orange-600 px-6 py-3 rounded-full font-semibold hover:bg-orange-50 transition-colors"
+            className="inline-block bg-white text-orange-600 px-6 py-3 rounded-2xl font-bold uppercase
+       hover:bg-orange-50  hover:scale-105
+       transition-transform duration-300 ease-in-out"
           >
             Start Writing
           </Link>
@@ -94,8 +96,6 @@ export default function Home() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* posts Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts</h2>
-
           {/* Filter Tags - Custom Dropdown */}
           <TagDropdown
             tags={allTags}
@@ -108,7 +108,7 @@ export default function Home() {
             {currentPosts.map((post) => (
               <div
                 key={post.slug}
-                className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
+                className="block border-2 border-orange-200 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
               >
                 <Link to={`/post/${post.slug}`}>
                   <h3 className="text-xl font-semibold text-gray-900 mb-1 hover:text-orange-600 transition-colors">
@@ -132,7 +132,7 @@ export default function Home() {
                       <button
                         key={index}
                         onClick={() => handleTagChange(tag)}
-                        className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full hover:bg-orange-200 transition-all cursor-pointer"
+                        className="px-3 py-1 capitalize bg-orange-100 text-orange-600 text-xs font-medium rounded-full hover:bg-orange-200 transition-all cursor-pointer"
                       >
                         {tag}
                       </button>

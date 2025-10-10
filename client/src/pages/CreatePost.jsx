@@ -1,4 +1,5 @@
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +17,7 @@ export default function CreatePost() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 🔹 Fetch user data
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get(`${API_URL}/profile`, {
@@ -24,7 +26,12 @@ export default function CreatePost() {
       setCurrentUser(res.data.user);
     } catch (error) {
       console.error("Error fetching current user:", error);
-      navigate("/login");
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please log in to create a post.",
+        confirmButtonColor: "#f97316",
+      }).then(() => navigate("/login"));
     }
   };
 
@@ -32,7 +39,7 @@ export default function CreatePost() {
     fetchCurrentUser();
   }, []);
 
-  // Generate slug whenever title changes
+  // 🔹 Auto-generate slug when title changes
   useEffect(() => {
     if (post.title) {
       const generatedSlug = post.title
@@ -45,22 +52,28 @@ export default function CreatePost() {
     }
   }, [post.title]);
 
+  // 🔹 Handle form submission
   const handleSubmit = async (e, submitStatus) => {
     e.preventDefault();
     if (!currentUser) {
-      alert("You must be logged in to submit a post.");
+      Swal.fire({
+        icon: "warning",
+        title: "Not Logged In",
+        text: "You must be logged in to submit a post.",
+        confirmButtonColor: "#f97316",
+      });
       navigate("/login");
       return;
     }
-    setIsSubmitting(true);
 
+    setIsSubmitting(true);
     try {
       const tagArray = post.tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag !== "");
 
-      const finalSlug = slug + "-" + Date.now();
+      const finalSlug = `${slug}-${Date.now()}`;
 
       const payload = {
         title: post.title,
@@ -76,18 +89,32 @@ export default function CreatePost() {
       });
 
       if (submitStatus === "draft") {
-        alert("Draft saved successfully!");
+        await Swal.fire({
+          icon: "info",
+          title: "Draft Saved",
+          text: "Your draft has been saved successfully.",
+          confirmButtonColor: "#f97316",
+        });
         navigate("/");
       } else {
-        alert("Article published successfully!");
+        await Swal.fire({
+          icon: "success",
+          title: "Article Published!",
+          text: "Your article is now live 🎉",
+          confirmButtonColor: "#f97316",
+        });
         navigate(`/post/${res.data.slug}`);
       }
     } catch (error) {
       console.error("Error submitting article:", error);
-      alert(
-        error.response?.data?.message ||
-          "An error occurred while saving the article."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Save Article",
+        text:
+          error.response?.data?.message ||
+          "An error occurred while saving the article.",
+        confirmButtonColor: "#f97316",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,10 +123,12 @@ export default function CreatePost() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white rounded-xl shadow-sm border border-orange-100">
+        {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
           <h1 className="text-2xl font-bold text-white">Create New Article</h1>
         </div>
 
+        {/* Form */}
         <form
           onSubmit={(e) => handleSubmit(e, "published")}
           className="p-6 space-y-6"
@@ -119,7 +148,7 @@ export default function CreatePost() {
             />
           </div>
 
-          {/* Slug Display (Read-only) */}
+          {/* Slug Display */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               URL Slug (Auto-generated)
@@ -160,7 +189,7 @@ export default function CreatePost() {
               onChange={(e) => setPost({ ...post, content: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-orange-200 focus:ring-orange-500 focus:border-orange-500"
               rows="12"
-              placeholder="Write your Post content here..."
+              placeholder="Write your article content here..."
               required
             />
           </div>
@@ -175,7 +204,6 @@ export default function CreatePost() {
               Cancel
             </button>
 
-            {/* Save as Draft */}
             <button
               type="button"
               onClick={(e) => handleSubmit(e, "draft")}
@@ -185,7 +213,6 @@ export default function CreatePost() {
               {isSubmitting ? "Saving..." : "Save as Draft"}
             </button>
 
-            {/* Publish Post */}
             <button
               type="submit"
               disabled={isSubmitting}

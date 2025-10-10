@@ -4,7 +4,7 @@ import Post from "../models/post.js";
 export const getCommentsByPost = async (req, res) => {
   try {
     const comments = await Comment.find({ post: req.params.postId })
-      .populate("author", "username")
+      .populate("author", "fullname email")
       .populate("parent");
     res.json(comments);
   } catch (err) {
@@ -55,7 +55,7 @@ export const addComment = async (req, res) => {
 
     const populatedComment = await Comment.findById(comment._id).populate(
       "author",
-      "username"
+      "fullname"
     );
 
     res.status(201).json(populatedComment);

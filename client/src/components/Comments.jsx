@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,6 +25,7 @@ export default function Comments() {
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
+      Swal.fire("Error", "Failed to load your comments.", "error");
     } finally {
       setLoading(false);
     }
@@ -51,28 +53,49 @@ export default function Comments() {
         )
       );
       setIsModalOpen(false);
-      alert("Comment updated successfully!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Your comment has been updated successfully.",
+        confirmButtonColor: "#f97316",
+      });
     } catch (error) {
       console.error("Error updating comment:", error);
-      alert("Failed to update comment");
+      Swal.fire("Error", "Failed to update the comment.", "error");
     }
   };
 
   // Delete comment
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this comment?")) {
-      return;
-    }
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await axios.delete(`${API_URL}/comment/${id}`, {
         withCredentials: true,
       });
+
       setComments((prevComments) => prevComments.filter((c) => c._id !== id));
-      alert("Comment deleted successfully!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "Your comment has been deleted.",
+        confirmButtonColor: "#f97316",
+      });
     } catch (error) {
       console.error("Error deleting comment:", error);
-      alert("Failed to delete comment");
+      Swal.fire("Error", "Failed to delete the comment.", "error");
     }
   };
 

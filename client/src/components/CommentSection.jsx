@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useAuth } from "../hook/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -17,6 +18,7 @@ export default function CommentSection({ postId }) {
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
+      Swal.fire("Error", "Failed to load comments.", "error");
     }
   };
 
@@ -28,7 +30,12 @@ export default function CommentSection({ postId }) {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      alert("Please login to comment");
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please login to leave a comment.",
+        confirmButtonColor: "#f97316",
+      });
       return;
     }
 
@@ -44,19 +51,33 @@ export default function CommentSection({ postId }) {
         },
         { withCredentials: true }
       );
+
       setComments([...comments, res.data]);
       setNewComment("");
+
+      Swal.fire({
+        icon: "success",
+        title: "Comment Posted!",
+        text: "Your comment has been added successfully.",
+        confirmButtonColor: "#f97316",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("Error adding comment:", error);
-      alert("Failed to add comment. Please try again.");
+      Swal.fire("Error", "Failed to add comment. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const getDisplayName = (author) => {
+  const getFullName = (author) => {
     if (!author) return "Anonymous";
-    return author?.fullname || author?.email || "Anonymous";
+    return author.fullname || "Anonymous";
+  };
+
+  const getEmail = (author) => {
+    return author.email;
   };
 
   return (
@@ -77,14 +98,20 @@ export default function CommentSection({ postId }) {
               <div className="flex items-start space-x-3">
                 <img
                   src="/profile.png"
-                  alt={getDisplayName(comment?.author)}
+                  alt={getFullName(comment.author)}
                   className="w-8 h-8 rounded-full border border-orange-200"
                 />
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <p className="text-sm font-medium text-gray-900">
-                      {getDisplayName(comment.author)}
-                    </p>
+                    <div className="block">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {getFullName(comment.author)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {getEmail(comment.author)}
+                      </p>
+                    </div>
+
                     <span className="text-xs text-gray-500">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>

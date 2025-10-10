@@ -1,14 +1,28 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     console.log(`Email reset dikirim ke: ${email}`);
-    alert('Link reset password telah dikirim ke email Anda.');
-    setEmail('');
+
+    Swal.fire({
+      title: "Link Sent!",
+      text: "Link reset password telah dikirim ke email Anda.",
+      icon: "success",
+      confirmButtonColor: "#f97316",
+      confirmButtonText: "OK",
+      background: "#fff",
+      customClass: {
+        popup: "rounded-2xl shadow-lg",
+      },
+    });
+
+    setEmail("");
   };
 
   return (
@@ -21,7 +35,8 @@ export default function ForgotPassword() {
           Forgot your password?
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Enter your email address and we’ll send you a link to reset your password.
+          Enter your email address and we’ll send you a link to reset your
+          password.
         </p>
       </div>
 
@@ -29,7 +44,10 @@ export default function ForgotPassword() {
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-100">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -57,7 +75,6 @@ export default function ForgotPassword() {
               </button>
             </div>
           </form>
-
           <div className="mt-6 text-center">
             <Link
               to="/login"

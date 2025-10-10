@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 import PublishedArticles from "../components/PublishedArticles";
 import Drafts from "../components/Drafts";
 import Comments from "../components/Comments";
@@ -30,7 +31,6 @@ export default function History() {
         withCredentials: true,
       });
 
-      // Separate published posts and drafts
       const allPosts = res.data;
       const publishedPosts = allPosts.filter(
         (post) => post.status === "published"
@@ -42,6 +42,12 @@ export default function History() {
     } catch (err) {
       console.error("Error fetching posts:", err);
       setError("Failed to load posts");
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to load posts. Please try again later.",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+      });
     } finally {
       setLoading(false);
     }
@@ -60,7 +66,17 @@ export default function History() {
   };
 
   const handleDeleteClick = async (id, type) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f97316",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       if (type === "Post" || type === "draft") {
@@ -70,24 +86,45 @@ export default function History() {
         setPosts(posts.filter((p) => p._id !== id));
         setDrafts(drafts.filter((d) => d._id !== id));
       }
+
       if (type === "comment") {
-        // Add comment delete API call here when available
+        // Placeholder: add your delete comment API call later
         setComments(comments.filter((c) => c.id !== id));
       }
+
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your item has been deleted successfully.",
+        icon: "success",
+        confirmButtonColor: "#f97316",
+      });
     } catch (err) {
       console.error("Error deleting item:", err);
-      alert("Failed to delete item");
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to delete item. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+      });
     }
   };
 
   const handleSave = () => {
     if (editingItem?.type !== "comment") return;
+
     setComments(
       comments.map((c) =>
         c.id === editingItem.id ? { ...c, comment: editedContent } : c
       )
     );
     setEditingItem(null);
+
+    Swal.fire({
+      title: "Saved!",
+      text: "Comment updated successfully.",
+      icon: "success",
+      confirmButtonColor: "#f97316",
+    });
   };
 
   if (loading) {
@@ -129,7 +166,7 @@ export default function History() {
         </div>
       )}
 
-      {/* Container utama */}
+      {/* Main Container */}
       <div className="bg-white rounded-xl shadow-sm border border-orange-100 overflow-hidden">
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
           <h1 className="text-2xl font-bold text-white">History</h1>

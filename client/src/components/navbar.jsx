@@ -1,17 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../hook/useAuth";
 
 export default function Navbar() {
   const [search, setSearch] = useState("");
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+
+    if (location.pathname === "/") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-orange-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center">
+          <Link onClick={handleLogoClick} className="flex items-center">
             <span className="text-2xl rubik font-bold hover:scale-105 scale-95 duration-300 text-white p-2 rounded bg-orange-500">
               Postly™
             </span>
