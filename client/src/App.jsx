@@ -3,15 +3,18 @@ import Navbar from "./components/navbar";
 import Home from "./pages/home";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
-import CreateArticle from "./pages/CreateArticle";
-import ArticleDetail from "./pages/ArticleDetail";
+import PostDetail from "./pages/PostDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import EditArticle from "./pages/EditArticle";
-import ResetPassword from "./pages/ResetPassword";
 import { AuthProvider } from "./context/authProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CreatePost from "./pages/CreatePost";
+import PublishedArticles from "./components/PublishedArticles";
+import Comments from "./components/Comments";
+import Drafts from "./components/Drafts";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -21,24 +24,18 @@ function App() {
         <main className="p-4">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/article/:id" element={<ArticleDetail />} />
+            <Route path="/post/:slug" element={<PostDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/ResetPassword" element={<ResetPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/create-post" element={<CreatePost />} />
             <Route
-              path="/Settings"
+              path="/settings"
               element={
                 <ProtectedRoute>
+                  {" "}
                   <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/create-article"
-              element={
-                <ProtectedRoute>
-                  <CreateArticle />
                 </ProtectedRoute>
               }
             />
@@ -46,7 +43,7 @@ function App() {
               path="/edit-article/:id"
               element={
                 <ProtectedRoute>
-                  <EditArticle />
+                  <EditArticle />{" "}
                 </ProtectedRoute>
               }
             />

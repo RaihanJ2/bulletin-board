@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -7,28 +10,32 @@ export default function ResetPassword() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  // Extract token from URL
   const location = useLocation();
-  const token = new URLSearchParams(location.search).get("token");
+  const token = location.pathname.split("/").pop();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password !== confirm) {
-      setMessage("Passwords do not match.");
+      setMessage("❌ Passwords do not match.");
       return;
     }
 
-    // Kirim token + password baru ke backend
-    const res = await fetch("/api/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, new_password: password })
-    });
+    try {
+      // Send token in URL, password in body
+      const res = await axios.post(`${API_URL}/reset-password/${token}`, {
+        new_password: password,
+      });
 
-    if (res.ok) {
-      setMessage("Password successfully reset. Redirecting...");
-      setTimeout(() => navigate("/login"), 2000);
-    } else {
-      setMessage("Invalid or expired token.");
+      if (res.status === 200) {
+        setMessage("✅ Password successfully reset. Redirecting to login...");
+        setTimeout(() => navigate("/login"), 2000);
+      }
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message || "❌ Invalid or expired reset token."
+      );
     }
   };
 
@@ -48,6 +55,7 @@ export default function ResetPassword() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            required
           />
         </div>
 
@@ -60,6 +68,7 @@ export default function ResetPassword() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className="w-full px-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            required
           />
         </div>
 

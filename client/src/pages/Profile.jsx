@@ -1,32 +1,56 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Profile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatar: 'https://source.unsplash.com/random/100x100?face',
-    bio: ''
+    name: "",
+    email: "",
+    bio: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Profile updated successfully.');
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/profile`, {
+        withCredentials: true,
+      });
+      setUserData({
+        name: res.data.user.name || "",
+        email: res.data.user.email || "",
+        bio: res.data.user.bio || "",
+      });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      if (error.response.status === 401) {
+        navigate("/login");
+      }
+    }
   };
 
-  const handlePasswordReset = async () => {
-    try {
-      // Simulasi pengiriman email berisi token reset password
-      alert(`A password reset link has been sent to ${userData.email}`);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
-      // Misal backend akan kirim email berisi token ke user
-      // Setelah dikirim, arahkan user ke halaman ganti password
-      navigate('/ResetPassword'); 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${API_URL}/profile`, userData, {
+        withCredentials: true,
+      });
+      alert("Profile updated successfully!");
     } catch (error) {
-      alert('Failed to send reset link. Please try again.');
-      console.error('Error sending reset link:', error);
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
+  };
+
+  // ✅ Fungsi baru untuk reset password
+  const handlePasswordReset = () => {
+    alert("Password reset link has been sent to your email.");
+    navigate("/reset-password"); // redirect setelah alert
   };
 
   return (
@@ -42,13 +66,6 @@ export default function Profile() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Avatar Section */}
             <div className="flex items-center space-x-6">
-              <div className="w-24 h-24 rounded-full overflow-hidden border border-orange-200 shadow-sm">
-                <img
-                  src={userData.avatar}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
               <div className="space-y-2">
                 <button
                   type="button"
@@ -110,10 +127,11 @@ export default function Profile() {
                 />
               </div>
 
-              {/* Password Reset Info */}
+              {/* ✅ Password Reset Info */}
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <p className="text-sm text-gray-700">
-                  To change your password, click the button below. A password reset link will be sent to your email.
+                  To change your password, click the button below. A password
+                  reset link will be sent to your email.
                 </p>
                 <button
                   type="button"
@@ -123,15 +141,15 @@ export default function Profile() {
                   Send Password Reset Link
                 </button>
               </div>
-            </div>
 
-            {/* Save Button */}
-            <button
-              type="submit"
-              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-            >
-              Save Changes
-            </button>
+              {/* Save Button */}
+              <button
+                type="submit"
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
           </form>
         </div>
       </div>

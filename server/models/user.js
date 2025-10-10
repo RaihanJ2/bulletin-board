@@ -11,8 +11,12 @@ const userSchema = new Schema(
     auth0Id: {
       type: String,
       unique: true,
+      sparse: true,
     },
     email: {
+      type: String,
+    },
+    bio: {
       type: String,
     },
     provider: {
@@ -20,11 +24,18 @@ const userSchema = new Schema(
       enum: ["local", "auth0"],
       default: "local",
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
   }
 );
+
 const User = mongoose.model("User", userSchema);
 
 export default User;

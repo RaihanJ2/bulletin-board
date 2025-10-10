@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Editrticle() {
   const navigate = useNavigate();
-  const [article, setArticle] = useState({
-    title: '',
-    summary: '',
-    content: '',
+  const [Post, setPost] = useState({
+    title: "",
+    summary: "",
+    content: "",
     image: null,
     imagePreview: null,
-    category: ''
+    category: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('title', article.title);
-    formData.append('summary', article.summary);
-    formData.append('content', article.content);
-    formData.append('category', article.category);
-    if (article.image) {
-      formData.append('image', article.image);
+    formData.append("title", Post.title);
+    formData.append("summary", Post.summary);
+    formData.append("content", Post.content);
+    formData.append("category", Post.category);
+    if (Post.image) {
+      formData.append("image", Post.image);
     }
 
-    const response = await fetch('/api/articles', {
-      method: 'POST',
+    const response = await fetch("/api/post", {
+      method: "POST",
       body: formData,
     });
     const data = await response.json();
-    navigate(`/articles/${data.id}`);
+    navigate(`/post/${data.id}`);
   };
 
   return (
@@ -46,8 +46,8 @@ export default function Editrticle() {
             </label>
             <input
               type="text"
-              value={article.title}
-              onChange={(e) => setArticle({...article, title: e.target.value})}
+              value={Post.title}
+              onChange={(e) => setPost({ ...Post, title: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border-orange-200 focus:ring-orange-500 focus:border-orange-500"
               placeholder="Enter article title"
               required
@@ -58,8 +58,8 @@ export default function Editrticle() {
               Category
             </label>
             <select
-              value={article.category}
-              onChange={(e) => setArticle({...article, category: e.target.value})}
+              value={Post.category}
+              onChange={(e) => setPost({ ...Post, category: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border-orange-200 focus:ring-orange-500 focus:border-orange-500"
               required
             >
@@ -71,17 +71,14 @@ export default function Editrticle() {
             </select>
           </div>
 
-    
-      
-
           {/* Summary Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Summary
             </label>
             <textarea
-              value={article.summary}
-              onChange={(e) => setArticle({...article, summary: e.target.value})}
+              value={Post.summary}
+              onChange={(e) => setPost({ ...Post, summary: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border-orange-200 focus:ring-orange-500 focus:border-orange-500"
               rows="3"
               placeholder="Brief summary of your article"
@@ -95,8 +92,8 @@ export default function Editrticle() {
               Content
             </label>
             <textarea
-              value={article.content}
-              onChange={(e) => setArticle({...article, content: e.target.value})}
+              value={Post.content}
+              onChange={(e) => setPost({ ...Post, content: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border-orange-200 focus:ring-orange-500 focus:border-orange-500"
               rows="12"
               placeholder="Write your article content here..."
@@ -108,7 +105,7 @@ export default function Editrticle() {
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
               className="px-6 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50"
             >
               Cancel

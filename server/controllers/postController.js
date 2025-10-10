@@ -2,7 +2,7 @@ import Post from "../models/post.js";
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("author", "username");
+    const posts = await Post.find().populate("author", "fullname email");
     res.json(posts);
   } catch (err) {
     console.error("❌ [getAllPosts] Error:", err);
@@ -15,10 +15,10 @@ export const getAllPosts = async (req, res) => {
 export const getPostBySlug = async (req, res) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug })
-      .populate("author", "username")
+      .populate("author", "fullname email")
       .populate({
         path: "comments",
-        populate: { path: "author", select: "username" },
+        populate: { path: "author", select: "fullname email" },
       });
     if (!post) return res.status(404).json({ message: "Post not found" });
     res.json(post);

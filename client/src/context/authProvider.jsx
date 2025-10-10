@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
@@ -16,6 +17,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setUser(null);
       console.error("Auth check error:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const loginUser = async (email, password) => {
@@ -39,10 +42,18 @@ export const AuthProvider = ({ children }) => {
     logoutUser,
     checkAuth,
     isAuthenticated: !!user,
+    loading,
   };
   useEffect(() => {
     checkAuth();
   }, []);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
