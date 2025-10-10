@@ -4,6 +4,7 @@ import {
   getCommentsByPost,
   deleteComment,
   getMyComments,
+  updateComment,
 } from "../controllers/commentController.js";
 import { isAuthenticated } from "../middleware/auth.js";
 
@@ -15,7 +16,7 @@ router.get("/my-comments", isAuthenticated, getMyComments);
 
 router.post("/", isAuthenticated, addComment);
 
-router.put("/:id", isAuthenticated, deleteComment);
+router.put("/:id", isAuthenticated, updateComment);
 
 router.delete("/:id", isAuthenticated, deleteComment);
 

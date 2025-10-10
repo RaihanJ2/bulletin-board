@@ -54,13 +54,17 @@ export default function CommentSection({ postId }) {
     }
   };
 
+  const getDisplayName = (author) => {
+    if (!author) return "Anonymous";
+    return author?.fullname || author?.email || "Anonymous";
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-5">
         Comments ({comments.length})
       </h2>
 
-      {/* Comment List */}
       <div className="space-y-4 mb-6">
         {comments.length === 0 ? (
           <p className="text-gray-500 italic text-sm">No comments yet.</p>
@@ -73,13 +77,13 @@ export default function CommentSection({ postId }) {
               <div className="flex items-start space-x-3">
                 <img
                   src="/profile.png"
-                  alt={comment.author?.username || "User"}
+                  alt={getDisplayName(comment?.author)}
                   className="w-8 h-8 rounded-full border border-orange-200"
                 />
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
                     <p className="text-sm font-medium text-gray-900">
-                      {comment.author?.username || comment.author?.email}
+                      {getDisplayName(comment.author)}
                     </p>
                     <span className="text-xs text-gray-500">
                       {new Date(comment.createdAt).toLocaleDateString()}
