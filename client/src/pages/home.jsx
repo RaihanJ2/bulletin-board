@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import TagDropdown from "../components/TagsDropdown";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
   const [posts, setposts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedTag, setSelectedTag] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -23,14 +24,32 @@ export default function Home() {
     fetchposts();
   }, []);
 
-  // --- Filter kategori ---
+  // --- Get unique tags from all posts and sort A-Z ---
+  const allTags = ["All"];
+  const uniqueTags = [];
+  posts.forEach((post) => {
+    if (post.tags && Array.isArray(post.tags)) {
+      post.tags.forEach((tag) => {
+        if (tag && !uniqueTags.includes(tag)) {
+          uniqueTags.push(tag);
+        }
+      });
+    }
+  });
+  // Sort tags alphabetically and add to allTags
+  uniqueTags.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  allTags.push(...uniqueTags);
+
+  // --- Filter by tag ---
   const filteredPosts =
-    selectedCategory === "All"
+    selectedTag === "All"
       ? posts
       : posts.filter(
           (post) =>
-            post.category &&
-            post.category.toLowerCase() === selectedCategory.toLowerCase()
+            post.tags &&
+            post.tags.some(
+              (tag) => tag.toLowerCase() === selectedTag.toLowerCase()
+            )
         );
 
   // --- Pagination ---
@@ -41,9 +60,6 @@ export default function Home() {
     startIndex + itemsPerPage
   );
 
-  // --- Daftar kategori ---
-  const categories = ["All", "Programming", "Design", "Business", "Technology"];
-
   // --- Fungsi Pagination ---
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -51,8 +67,8 @@ export default function Home() {
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
+  const handleTagChange = (tag) => {
+    setSelectedTag(tag);
     setCurrentPage(1);
   };
 
@@ -80,55 +96,66 @@ export default function Home() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts</h2>
 
-          {/* Filter Categories */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
-                  selectedCategory === cat
-                    ? "bg-orange-500 text-white border-orange-500"
-                    : "border-gray-300 text-gray-700 hover:bg-orange-100"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {/* Filter Tags - Custom Dropdown */}
+          <TagDropdown
+            tags={allTags}
+            selectedTag={selectedTag}
+            onTagChange={handleTagChange}
+          />
 
           {/* post List */}
           <div className="space-y-6">
             {currentPosts.map((post) => (
-              <Link
-                to={`/post/${post.slug}`}
+              <div
                 key={post.slug}
                 className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
               >
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {post.title}
-                </h3>
+                <Link to={`/post/${post.slug}`}>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1 hover:text-orange-600 transition-colors">
+                    {post.title}
+                  </h3>
+                </Link>
                 <div className="text-sm text-gray-500 mb-3">
                   By{" "}
                   <span className="text-gray-700 font-medium">
-                    {post.author?.name || "Unknown Author"}
+                    {post.author?.fullname || post.author?.email}
                   </span>{" "}
-                  • <span>{post.date || "No date"}</span>
+                  •{" "}
+                  <span>
+                    {new Date(post.createdAt).toLocaleDateString() || "No date"}
+                  </span>
                 </div>
-                <div className="text-orange-500 text-sm font-medium mb-3">
-                  {post.category || "Uncategorized"}
+                {/* Display Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {post.tags && post.tags.length > 0 ? (
+                    post.tags.map((tag, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleTagChange(tag)}
+                        className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full hover:bg-orange-200 transition-all cursor-pointer"
+                      >
+                        {tag}
+                      </button>
+                    ))
+                  ) : (
+                    <span className="text-orange-500 text-sm font-medium">
+                      No tags
+                    </span>
+                  )}
                 </div>
-                <p className="text-gray-600">
-                  {post.content
-                    ? post.content.substring(0, 100) + "..."
-                    : "No description available."}
-                </p>
-              </Link>
+                <Link to={`/post/${post.slug}`}>
+                  <p className="text-gray-600 hover:text-gray-800 transition-colors">
+                    {post.content
+                      ? post.content.substring(0, 100) + "..."
+                      : "No description available."}
+                  </p>
+                </Link>
+              </div>
             ))}
 
             {filteredPosts.length === 0 && (
               <p className="text-center text-gray-500 py-8">
-                No posts found for this category.
+                No posts found for this tag.
               </p>
             )}
           </div>
