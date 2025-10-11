@@ -60,7 +60,7 @@ export default function TagDropdown({ tags, selectedTag, onTagChange }) {
                 <button
                   key={tag}
                   onClick={() => handleTagSelect(tag)}
-                  className={`w-full px-4 py-2.5 text-left hover:bg-orange-50 transition-colors ${
+                  className={`w-full capitalize px-4 py-2.5 text-left hover:bg-orange-50 transition-colors ${
                     selectedTag === tag
                       ? "bg-orange-100 text-orange-600 font-semibold"
                       : "text-gray-700"

@@ -41,7 +41,7 @@ export default function PostDetail() {
   // ✅ Jika data berhasil diambil
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="bg-white border-orange-200 rounded-xl shadow-md border border-orange-100 p-8 mb-10">
+      <div className="bg-white border-orange-200 rounded-xl shadow-md border  p-8 mb-10">
         <Link to="/" className="text-orange-500 hover:text-orange-600 text-sm">
           ← Back to Posts
         </Link>

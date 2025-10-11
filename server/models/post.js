@@ -37,14 +37,6 @@ const postSchema = new Schema(
       enum: ["draft", "published"],
       default: "draft",
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    views: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,

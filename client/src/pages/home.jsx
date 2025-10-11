@@ -203,7 +203,7 @@ export default function Home() {
                 New post
               </Link>
               <Link
-                to="/settings"
+                to="/history"
                 className="border border-orange-500 text-orange-500 px-6 py-3 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
               >
                 History Post
