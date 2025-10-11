@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/navbar";
+import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import PostDetail from "./pages/PostDetail";
@@ -10,9 +10,6 @@ import EditArticle from "./pages/EditArticle";
 import { AuthProvider } from "./context/authProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
-import PublishedArticles from "./components/PublishedArticles";
-import Comments from "./components/Comments";
-import Drafts from "./components/Drafts";
 import ResetPassword from "./pages/ResetPassword";
 import History from "./pages/History";
 
