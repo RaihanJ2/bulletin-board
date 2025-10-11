@@ -1,7 +1,7 @@
 // import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../hook/useAuth";
+import ProfileDropdown from "./ProfileDropdown";
 
 export default function Navbar() {
   // const [search, setSearch] = useState("");
