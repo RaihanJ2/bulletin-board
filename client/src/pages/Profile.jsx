@@ -12,6 +12,9 @@ export default function Profile() {
     email: "",
     bio: "",
   });
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+  const [resetError, setResetError] = useState("");
 
   const fetchUser = async () => {
     try {
@@ -27,13 +30,6 @@ export default function Profile() {
       console.error("Error fetching user data:", error);
       if (error.response?.status === 401) {
         navigate("/login");
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: "Failed to fetch user data.",
-          icon: "error",
-          confirmButtonColor: "#f97316",
-        });
       }
     }
   };
@@ -48,59 +44,67 @@ export default function Profile() {
       await axios.put(`${API_URL}/profile`, userData, {
         withCredentials: true,
       });
+
+      // ✅ Success alert
       Swal.fire({
-        title: "Success!",
-        text: "Your profile has been updated successfully.",
         icon: "success",
-        confirmButtonColor: "#f97316",
+        title: "Profile Updated",
+        text: "Your profile has been updated successfully!",
+        confirmButtonColor: "#f97316", // orange
       });
     } catch (error) {
       console.error("Error updating profile:", error);
+
+      // ❌ Error alert
       Swal.fire({
+        icon: "error",
         title: "Update Failed",
         text: "Failed to update profile. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#f97316",
+        confirmButtonColor: "#ef4444", // red
       });
     }
   };
 
-  // ✅ Password reset with SweetAlert
+  // ✅ Password reset function
   const handlePasswordReset = async () => {
-    const result = await Swal.fire({
-      title: "Send Password Reset Link?",
-      text: "A password reset link will be sent to your registered email.",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#f97316",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, send it!",
-    });
+    setResetLoading(true);
+    setResetMessage("");
+    setResetError("");
 
-    if (result.isConfirmed) {
-      try {
-        // Simulate backend request (you can replace this with real API call)
-        await axios.post(`${API_URL}/forgot-password`, {
-          email: userData.email,
-        });
+    try {
+      const res = await axios.post(`${API_URL}/forgot-password`, {
+        email: userData.email,
+      });
 
+      if (res.status === 200) {
+        setResetMessage("✅ Password reset link has been sent to your email!");
+        setTimeout(() => setResetMessage(""), 5000);
+
+        // ✅ SweetAlert success
         Swal.fire({
-          title: "Link Sent!",
-          text: "Password reset link has been sent to your email.",
           icon: "success",
-          confirmButtonColor: "#f97316",
-        });
-
-        navigate("/reset-password");
-      } catch (error) {
-        console.error("Error sending password reset:", error);
-        Swal.fire({
-          title: "Error",
-          text: "Failed to send reset link. Please try again later.",
-          icon: "error",
+          title: "Password Reset Sent",
+          text: "A password reset link has been sent to your email.",
           confirmButtonColor: "#f97316",
         });
       }
+    } catch (error) {
+      console.error("Error sending password reset:", error);
+      const message =
+        error.response?.data?.message || "Failed to send reset email";
+
+      setResetError(message);
+      setTimeout(() => setResetError(""), 5000);
+
+      // ❌ SweetAlert error
+      Swal.fire({
+        icon: "error",
+        title: "Reset Failed",
+        text: message,
+        confirmButtonColor: "#ef4444",
+      });
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -115,6 +119,22 @@ export default function Profile() {
         {/* Content */}
         <div className="p-6 space-y-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Avatar Section */}
+            <div className="flex items-center space-x-6">
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm border border-orange-500 text-orange-500 rounded-full hover:bg-orange-50 transition-colors"
+                >
+                  Change Photo
+                </button>
+                <p className="text-sm text-gray-500">
+                  Recommended: Square image, at least 400x400px
+                </p>
+              </div>
+            </div>
+
+            {/* Profile Information */}
             <div className="space-y-5">
               {/* Full Name */}
               <div>
@@ -168,12 +188,28 @@ export default function Profile() {
                   To change your password, click the button below. A password
                   reset link will be sent to your email.
                 </p>
+
+                {/* Success Message */}
+                {resetMessage && (
+                  <div className="mt-3 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm">
+                    {resetMessage}
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {resetError && (
+                  <div className="mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+                    {resetError}
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={handlePasswordReset}
-                  className="mt-3 px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  disabled={resetLoading || !userData.email}
+                  className="mt-3 px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send Password Reset Link
+                  {resetLoading ? "Sending..." : "Send Password Reset Link"}
                 </button>
               </div>
 

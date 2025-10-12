@@ -1,31 +1,39 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setError("");
+    setLoading(true);
+
     try {
-      await axios.post(`${API_URL}/forgot-password`, { email });
-      Swal.fire({
-        title: "Link Sent!",
-        text: "Link reset password telah dikirim ke email Anda.",
-        icon: "success",
-        confirmButtonColor: "#f97316",
+      const res = await axios.post(`${API_URL}/forgot-password`, {
+        email: email.trim(),
       });
-      setEmail("");
-    } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to send reset link",
-        icon: "error",
-        confirmButtonColor: "#f97316",
-      });
+
+      if (res.status === 200) {
+        setMessage("✅ Reset link has been sent to your email!");
+        setEmail("");
+      }
+    } catch (err) {
+      console.error("Error sending password reset:", err);
+      if (err.response) {
+        setError(err.response.data.message || "Failed to send reset email");
+      } else {
+        setError("Network error. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,7 +47,7 @@ export default function ForgotPassword() {
           Forgot your password?
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Enter your email address and we’ll send you a link to reset your
+          Enter your email address and we'll send you a link to reset your
           password.
         </p>
       </div>
@@ -47,6 +55,20 @@ export default function ForgotPassword() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-100">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Success Message */}
+            {message && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                {message}
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor="email"
@@ -64,21 +86,24 @@ export default function ForgotPassword() {
                            px-3 py-2 transition-colors"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
 
             <div>
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm
                            text-sm font-medium text-white bg-orange-500 hover:bg-orange-600
                            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500
-                           transition-colors"
+                           transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Reset Link
+                {loading ? "Sending..." : "Send Reset Link"}
               </button>
             </div>
           </form>
+
           <div className="mt-6 text-center">
             <Link
               to="/login"
