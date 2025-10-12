@@ -1,28 +1,32 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(`Email reset dikirim ke: ${email}`);
-
-    Swal.fire({
-      title: "Link Sent!",
-      text: "Link reset password telah dikirim ke email Anda.",
-      icon: "success",
-      confirmButtonColor: "#f97316",
-      confirmButtonText: "OK",
-      background: "#fff",
-      customClass: {
-        popup: "rounded-2xl shadow-lg",
-      },
-    });
-
-    setEmail("");
+    try {
+      await axios.post(`${API_URL}/forgot-password`, { email });
+      Swal.fire({
+        title: "Link Sent!",
+        text: "Link reset password telah dikirim ke email Anda.",
+        icon: "success",
+        confirmButtonColor: "#f97316",
+      });
+      setEmail("");
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to send reset link",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+      });
+    }
   };
 
   return (
