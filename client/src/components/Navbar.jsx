@@ -63,12 +63,20 @@ export default function Navbar() {
                 <ProfileDropdown />
               </>
             ) : (
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-              >
-                Get started
-              </Link>
+              <>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 rounded-full font-bold capitalize bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+                >
+                  Get started
+                </Link>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-full font-bold  capitalize border border-orange-500 text-orange-500 bg-white hover:bg-orange-500 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+              </>
             )}
           </div>
         </div>

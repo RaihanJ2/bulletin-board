@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#ff6a00" rx="64" ry="64"/>
+
+  <!-- Text -->
+  <text
+    x="50%"
+    y="54%"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Rubik, sans-serif"
+    font-weight="700"
+    font-size="180"
+    fill="#ffffff"
+  >
+    Postly™
+  </text>
+</svg>

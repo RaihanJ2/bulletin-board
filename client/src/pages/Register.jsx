@@ -38,9 +38,11 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center mb-6">
-          <span className="text-3xl font-bold text-orange-500">MyArticle</span>
+      <div className="flex items-center flex-col sm:mx-auto sm:w-full sm:max-w-md">
+        <Link to="/" className="flex items-center p-2">
+          <span className="text-5xl rubik font-bold hover:scale-105 scale-95 duration-300 text-white p-2 rounded bg-orange-500">
+            Postly™
+          </span>
         </Link>
         <h2 className="text-center text-3xl font-extrabold text-gray-900">
           Create your account
