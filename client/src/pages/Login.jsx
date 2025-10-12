@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../hook/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -10,16 +11,14 @@ export default function Login() {
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { loginUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await axios.post(`${API_URL}/login`, formData, {
-        withCredentials: true,
-      });
-      console.log("login response:", res.data);
+      await loginUser(formData.email, formData.password);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
@@ -32,6 +31,8 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = () => {
+    // Store a flag to check auth after redirect
+    sessionStorage.setItem("pendingAuth", "true");
     window.location.href = `${API_URL}/auth/google`;
   };
 
@@ -52,7 +53,6 @@ export default function Login() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-orange-200">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Email Input */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
@@ -81,7 +81,6 @@ export default function Login() {
               />
             </div>
 
-            {/* Password Input */}
             <div>
               <label
                 htmlFor="password"
@@ -104,7 +103,6 @@ export default function Login() {
               />
             </div>
 
-            {/* Remember me + Forgot password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
@@ -127,7 +125,6 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* Sign in button */}
             <div>
               <button
                 type="submit"
@@ -140,6 +137,7 @@ export default function Login() {
               </button>
             </div>
           </form>
+
           <div className="mt-6">
             <button
               onClick={handleGoogleSignIn}
@@ -170,7 +168,7 @@ export default function Login() {
               Continue with Google
             </button>
           </div>
-          {/* Divider */}
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -183,7 +181,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Register button */}
             <div className="mt-6">
               <Link
                 to="/register"
@@ -197,7 +194,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Terms and Privacy */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               By continuing, you agree to our{" "}

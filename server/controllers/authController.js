@@ -4,6 +4,7 @@ import User from "../models/user.js";
 import dotenv from "dotenv";
 
 dotenv.config();
+
 export const register = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
@@ -42,6 +43,7 @@ export const login = async (req, res, next) => {
     });
   })(req, res, next);
 };
+
 export const logout = async (req, res) => {
   req.logout((err) => {
     if (err) {
@@ -84,9 +86,22 @@ export const googleAuth = passport.authenticate("auth0", {
 
 export const googleAuthCallback = [
   passport.authenticate("auth0", {
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
+    failureRedirect: `${process.env.CLIENT_URL}/login?error=auth_failed`,
   }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL);
+    console.log("✅ OAuth Success - User:", req.user);
+    console.log("✅ Session ID:", req.sessionID);
+    console.log("✅ Is Authenticated:", req.isAuthenticated());
+
+    // Explicitly save session before redirecting
+    req.session.save((err) => {
+      if (err) {
+        console.error("❌ Session save error:", err);
+        return res.redirect(
+          `${process.env.CLIENT_URL}/login?error=session_failed`
+        );
+      }
+      res.redirect(process.env.CLIENT_URL);
+    });
   },
 ];

@@ -14,13 +14,16 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
       setUser(res.data.user);
+      return res.data.user;
     } catch (error) {
       setUser(null);
       console.error("Auth check error:", error);
+      return null;
     } finally {
       setLoading(false);
     }
   };
+
   const loginUser = async (email, password) => {
     const res = await axios.post(
       `${API_URL}/login`,
@@ -32,8 +35,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logoutUser = async () => {
-    await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
-    setUser(null);
+    try {
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still clear user locally even if server logout fails
+      setUser(null);
+    }
   };
 
   const value = {
@@ -44,9 +53,11 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     loading,
   };
+
   useEffect(() => {
     checkAuth();
   }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

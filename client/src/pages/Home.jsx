@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import TagDropdown from "../components/TagsDropdown";
+import { useAuth } from "../hook/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,8 +11,8 @@ export default function Home() {
   const [selectedTag, setSelectedTag] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const { checkAuth } = useAuth();
 
-  // --- Fetch data artikel dari backend ---
   useEffect(() => {
     const fetchposts = async () => {
       try {
@@ -23,6 +24,16 @@ export default function Home() {
     };
     fetchposts();
   }, []);
+
+  useEffect(() => {
+    // Check if we just returned from OAuth
+    const pendingAuth = sessionStorage.getItem("pendingAuth");
+    if (pendingAuth) {
+      sessionStorage.removeItem("pendingAuth");
+      // Force re-check authentication
+      checkAuth();
+    }
+  }, [checkAuth]);
 
   // --- Get unique tags from all posts and sort A-Z ---
   const allTags = ["All"];
