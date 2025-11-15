@@ -223,9 +223,9 @@ This project demonstrates my passion for creating **user-focused, technically ex
 
 **Ready to discuss how I can contribute to your projects?**
 - 📧 Email: raihanjansmaillendra.rjs@gmail.com
-- 💼 LinkedIn: (https://www.linkedin.com/in/raihan-jan-smaillendra-suryono-4b956a393/)
-- 🐙 GitHub: [[Your GitHub]](https://github.com/RaihanJ2/)
-- 🌐 Portfolio: [[Your Portfolio Site]](https://portofolio-psi-indol.vercel.app/)
+- 💼 LinkedIn: [[Raihan Jan'smaillendra Suryono]](https://www.linkedin.com/in/raihan-jan-smaillendra-suryono-4b956a393/)
+- 🐙 GitHub: [[RaihanJ2]](https://github.com/RaihanJ2/)
+- 🌐 Portfolio: [[Portofolio]](https://portofolio-psi-indol.vercel.app/)
 
 ---
 
