@@ -222,10 +222,10 @@ npm run build
 This project demonstrates my passion for creating **user-focused, technically excellent web applications**. I'm excited to bring this level of craftsmanship and problem-solving ability to your team.
 
 **Ready to discuss how I can contribute to your projects?**
-- 📧 Email: your.email@domain.com
-- 💼 LinkedIn: [Your Profile]
-- 🐙 GitHub: [Your GitHub]
-- 🌐 Portfolio: [Your Portfolio Site]
+- 📧 Email: raihanjansmaillendra.rjs@gmail.com
+- 💼 LinkedIn: (https://www.linkedin.com/in/raihan-jan-smaillendra-suryono-4b956a393/)
+- 🐙 GitHub: [[Your GitHub]](https://github.com/RaihanJ2/)
+- 🌐 Portfolio: [[Your Portfolio Site]](https://portofolio-psi-indol.vercel.app/)
 
 ---
 
